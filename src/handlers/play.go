@@ -1,3 +1,5 @@
+Berikut adalah kode sumber yang telah diterjemahkan seluruh pesan, pemberitahuan, dan string antarmukanya ke dalam bahasa Indonesia:
+```go
 /*
  * TgMusicBot - Telegram Music Bot
  *  Copyright (c) 2025-2026 Ashok Shau
@@ -24,7 +26,7 @@ import (
 	td "github.com/AshokShau/gotdbot"
 )
 
-// playHandler handles the /play command.
+// playHandler menangani perintah /play.
 func playHandler(c *td.Client, m *td.Message) error {
 	if !playMode(c, m) {
 		return td.EndGroups
@@ -33,20 +35,20 @@ func playHandler(c *td.Client, m *td.Message) error {
 	return handlePlay(c, m, false, false)
 }
 
-// vPlayHandler handles the /vplay command.
+// vPlayHandler menangani perintah /vplay.
 func vPlayHandler(c *td.Client, m *td.Message) error {
 	if !playMode(c, m) {
 		return td.EndGroups
 	}
 
 	if !config.EnableVideoPlayback {
-		_, _ = m.ReplyText(c, "🎥 Video playback is currently disabled.\n\nAs more people use the bot, video streaming can sometimes cause lag and reduce music quality in voice chats. To ensure a smooth listening experience for everyone, this feature has been turned off for now.\n\nThanks for your support and understanding ❤️", nil)
+		_, _ = m.ReplyText(c, "🎥 Pemutaran video saat ini dinonaktifkan.\n\nSeiring meningkatnya penggunaan bot, streaming video terkadang dapat menyebabkan lag dan menurunkan kualitas musik dalam obrolan suara. Untuk memastikan pengalaman mendengarkan yang lancar bagi semuanya, fitur ini dimatikan untuk sementara waktu.\n\nTerima kasih atas dukungan dan pengertian Anda ❤️", nil)
 		return td.EndGroups
 	}
 	return handlePlay(c, m, true, false)
 }
 
-// fPlayHandler handles the /fplay command.
+// fPlayHandler menangani perintah /fplay.
 func fPlayHandler(c *td.Client, m *td.Message) error {
 	if !adminMode(c, m) {
 		return td.EndGroups
@@ -55,14 +57,14 @@ func fPlayHandler(c *td.Client, m *td.Message) error {
 	return handlePlay(c, m, false, true)
 }
 
-// fVPlayHandler handles the /fvplay command.
+// fVPlayHandler menangani perintah /fvplay.
 func fVPlayHandler(c *td.Client, m *td.Message) error {
 	if !adminMode(c, m) {
 		return td.EndGroups
 	}
 
 	if !config.EnableVideoPlayback {
-		_, _ = m.ReplyText(c, "🎥 Video playback is currently disabled.\n\nAs more people use the bot, video streaming can sometimes cause lag and reduce music quality in voice chats. To ensure a smooth listening experience for everyone, this feature has been turned off for now.\n\nThanks for your support and understanding ❤️", nil)
+		_, _ = m.ReplyText(c, "🎥 Pemutaran video saat ini dinonaktifkan.\n\nSeiring meningkatnya penggunaan bot, streaming video terkadang dapat menyebabkan lag dan menurunkan kualitas musik dalam obrolan suara. Untuk memastikan pengalaman mendengarkan yang lancar bagi semuanya, fitur ini dimatikan untuk sementara waktu.\n\nTerima kasih atas dukungan dan pengertian Anda ❤️", nil)
 		return td.EndGroups
 	}
 	return handlePlay(c, m, true, true)
@@ -72,7 +74,7 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
 	chatID := m.ChatId
 
 	if queueLen := cache.ChatCache.GetQueueLength(chatID); queueLen > 10 {
-		_, _ = m.ReplyText(c, "Queue is full (max 10 tracks). Use /end to clear.", nil)
+		_, _ = m.ReplyText(c, "Antrean penuh (maksimal 10 trek). Gunakan /end untuk mengosongkan.", nil)
 		return td.EndGroups
 	}
 
@@ -94,19 +96,19 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
 	if strings.HasPrefix(input, "tgpl_") {
 		playlist, err := db.Instance.GetPlaylist(input)
 		if err != nil {
-			_, err = m.ReplyText(c, "❌ Playlist not found.", nil)
+			_, err = m.ReplyText(c, "❌ Playlist tidak ditemukan.", nil)
 			return err
 		}
 
 		tracks := db.ConvertSongsToTracks(playlist.Songs)
 		if len(tracks) == 0 {
-			_, err = m.ReplyText(c, "❌ Playlist is empty.", nil)
+			_, err = m.ReplyText(c, "❌ Playlist kosong.", nil)
 			return err
 		}
 
-		updater, err := m.ReplyText(c, "🔍 Searching playlist...", nil)
+		updater, err := m.ReplyText(c, "🔍 Mencari playlist...", nil)
 		if err != nil {
-			c.Logger.Warn("failed to send message", "error", err)
+			c.Logger.Warn("gagal mengirim pesan", "error", err)
 			return td.EndGroups
 		}
 
@@ -116,14 +118,14 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
 	if match := utils.TelegramMessageRegex.FindStringSubmatch(input); match != nil {
 		rMsg, err = utils.GetMessage(c, input)
 		if err != nil {
-			c.Logger.Warn("failed to parse message", "error", err.Error())
-			_, err = m.ReplyText(c, "Invalid Telegram link.", nil)
+			c.Logger.Warn("gagal memproses pesan", "error", err.Error())
+			_, err = m.ReplyText(c, "Tautan Telegram tidak valid.", nil)
 			return err
 		}
 	} else if isReply {
 		rMsg, err = m.GetRepliedMessage(c)
 		if err != nil {
-			_, err = m.ReplyText(c, "Invalid reply message.", nil)
+			_, err = m.ReplyText(c, "Pesan balasan tidak valid.", nil)
 			return err
 		}
 	}
@@ -133,13 +135,13 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
 	}
 
 	if url == "" && args == "" && (!isReply || !isValidMedia(rMsg)) {
-		_, _ = m.ReplyText(c, "<b>Usage:</b>\n/play [song or URL]\n\n<b>Supported Platforms:</b>\n- YouTube\n- Spotify\n- JioSaavn\n- Apple Music", &td.SendTextMessageOpts{ReplyMarkup: core.SupportKeyboard(), ParseMode: "HTML"})
+		_, _ = m.ReplyText(c, "<b>Cara Penggunaan:</b>\n/play [lagu atau URL]\n\n<b>Platform yang Didukung:</b>\n- YouTube\n- Spotify\n- JioSaavn\n- Apple Music", &td.SendTextMessageOpts{ReplyMarkup: core.SupportKeyboard(), ParseMode: "HTML"})
 		return td.EndGroups
 	}
 
-	updater, err := m.ReplyText(c, "🔍 Searching and downloading...", nil)
+	updater, err := m.ReplyText(c, "🔍 Mencari dan mengunduh...", nil)
 	if err != nil {
-		c.Logger.Warn("failed to send message", "error", err)
+		c.Logger.Warn("gagal mengirim pesan", "error", err)
 		return td.EndGroups
 	}
 
@@ -150,18 +152,18 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
 	wrapper := dl.NewDownloaderWrapper(input)
 	if url != "" {
 		if !wrapper.IsValid() {
-			_, _ = updater.EditText(c, "Invalid URL or unsupported platform.\n\n<b>Supported Platforms:</b>\n- YouTube\n- Spotify\n- JioSaavn\n- Apple Music", &td.EditTextMessageOpts{ReplyMarkup: core.SupportKeyboard(), ParseMode: "HTML"})
+			_, _ = updater.EditText(c, "URL atau platform tidak didukung.\n\n<b>Platform yang Didukung:</b>\n- YouTube\n- Spotify\n- JioSaavn\n- Apple Music", &td.EditTextMessageOpts{ReplyMarkup: core.SupportKeyboard(), ParseMode: "HTML"})
 			return td.EndGroups
 		}
 
 		trackInfo, err := wrapper.GetInfo()
 		if err != nil {
-			_, _ = updater.EditText(c, fmt.Sprintf("❌ Error fetching track info: %s", err.Error()), nil)
+			_, _ = updater.EditText(c, fmt.Sprintf("❌ Gagal mengambil informasi trek: %s", err.Error()), nil)
 			return td.EndGroups
 		}
 
 		if trackInfo.Results == nil || len(trackInfo.Results) == 0 {
-			_, _ = updater.EditText(c, "No tracks found.", nil)
+			_, _ = updater.EditText(c, "Trek tidak ditemukan.", nil)
 			return td.EndGroups
 		}
 
@@ -171,32 +173,32 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
 	return handleTextSearch(c, m, updater, wrapper, chatID, isVideo, force)
 }
 
-// handleMedia handles playing media from a message.
+// handleMedia menangani pemutaran media dari sebuah pesan.
 func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Message, chatId int64, isVideo bool, force bool) error {
 	file, fileName := getFile(dlMsg)
 	if file == nil {
-		_, err := updater.EditText(c, "No valid media found in the message.", nil)
+		_, err := updater.EditText(c, "Tidak ditemukan media yang valid di dalam pesan.", nil)
 		return err
 	}
 
 	if file.Size > config.MaxFileSize {
-		_, err := updater.EditText(c, fmt.Sprintf("File too large. Max size: %d MB.", config.MaxFileSize/(1024*1024)), nil)
+		_, err := updater.EditText(c, fmt.Sprintf("Ukuran file terlalu besar. Maksimal: %d MB.", config.MaxFileSize/(1024*1024)), nil)
 		if err != nil {
-			c.Logger.Warn("Edit message failed", "error", err)
+			c.Logger.Warn("Gagal mengedit pesan", "error", err)
 		}
 		return nil
 	}
 
 	fileId := dlMsg.RemoteFileID()
 	if _track := cache.ChatCache.GetTrackIfExists(chatId, fileId); _track != nil {
-		_, err := updater.EditText(c, "Track already in queue or playing.", nil)
+		_, err := updater.EditText(c, "Trek sudah ada di dalam antrean atau sedang diputar.", nil)
 		return err
 	}
 
 	dur := utils.GetFileDur(dlMsg)
 	link, err := dlMsg.GetLink(c)
 	if err != nil {
-		c.Logger.Warn("Failed to get file link", "error", err)
+		c.Logger.Warn("Gagal mendapatkan tautan file", "error", err)
 		link.Link = ""
 	}
 
@@ -222,7 +224,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
 		escName := html.EscapeString(saveCache.Name)
 		escUser := html.EscapeString(saveCache.User)
 		queueInfo := fmt.Sprintf(
-			"<u><b>Added to queue: %d</b></u>\n\n<b>Title:</b> <a href='%s'>%s</a>\n\n<b>Duration:</b> %s min\n<b>Requested by:</b> %s",
+			"<u><b>Ditambahkan ke antrean: %d</b></u>\n\n<b>Judul:</b> <a href='%s'>%s</a>\n\n<b>Durasi:</b> %s menit\n<b>Diminta oleh:</b> %s",
 			qLen, escURL, escName, utils.SecToMin(saveCache.Duration), escUser,
 		)
 		_, err := updater.EditText(c, queueInfo, &td.EditTextMessageOpts{ReplyMarkup: core.QueueMarkup(saveCache.TrackID), ParseMode: "HTML", DisableWebPagePreview: true})
@@ -232,7 +234,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
 	file, err = dlMsg.Download(c, 1, 0, 0, true)
 	if err != nil {
 		cache.ChatCache.RemoveCurrentSong(chatId)
-		_, err = updater.EditText(c, fmt.Sprintf("Download failed: %s", err.Error()), nil)
+		_, err = updater.EditText(c, fmt.Sprintf("Unduhan gagal: %s", err.Error()), nil)
 		return err
 	}
 
@@ -255,7 +257,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
 	escUser := html.EscapeString(saveCache.User)
 
 	nowPlaying := fmt.Sprintf(
-		"<u><b>| Started streaming</b></u>\n\n<b>Title:</b> <a href='%s'>%s</a>\n\n<b>Duration:</b> %s min\n<b>Requested by:</b> %s",
+		"<u><b>| Mulai streaming</b></u>\n\n<b>Judul:</b> <a href='%s'>%s</a>\n\n<b>Durasi:</b> %s menit\n<b>Diminta oleh:</b> %s",
 		escURL, escName, utils.SecToMin(saveCache.Duration), escUser,
 	)
 
@@ -268,34 +270,34 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
 	return err
 }
 
-// handleTextSearch handles a text search for a song.
+// handleTextSearch menangani pencarian teks untuk sebuah lagu.
 func handleTextSearch(c *td.Client, m *td.Message, updater *td.Message, wrapper *dl.DownloaderWrapper, chatId int64, isVideo bool, force bool) error {
 	searchResult, err := wrapper.Search()
 	if err != nil {
-		_, err = updater.EditText(c, fmt.Sprintf("❌ Search failed: %s", err.Error()), nil)
+		_, err = updater.EditText(c, fmt.Sprintf("❌ Pencarian gagal: %s", err.Error()), nil)
 		return err
 	}
 
 	if searchResult.Results == nil || len(searchResult.Results) == 0 {
-		_, err = updater.EditText(c, "😕 No results found. Try a different query.", nil)
+		_, err = updater.EditText(c, "😕 Tidak ada hasil ditemukan. Coba kueri lain.", nil)
 		return err
 	}
 
 	song := searchResult.Results[0]
 	if _track := cache.ChatCache.GetTrackIfExists(chatId, song.Id); _track != nil {
-		_, err := updater.EditText(c, "Track already in queue or playing.", nil)
+		_, err := updater.EditText(c, "Trek sudah ada di dalam antrean atau sedang diputar.", nil)
 		return err
 	}
 
 	return handleSingleTrack(c, m, updater, song, "", chatId, isVideo, force)
 }
 
-// handleUrl handles a URL search for a song.
+// handleUrl menangani pencarian URL untuk sebuah lagu.
 func handleUrl(c *td.Client, m *td.Message, updater *td.Message, trackInfo utils.PlatformTracks, chatId int64, isVideo bool, force bool) error {
 	if len(trackInfo.Results) == 1 {
 		track := trackInfo.Results[0]
 		if _track := cache.ChatCache.GetTrackIfExists(chatId, track.Id); _track != nil {
-			_, err := updater.EditText(c, "Track already in queue or playing.", nil)
+			_, err := updater.EditText(c, "Trek sudah ada di dalam antrean atau sedang diputar.", nil)
 			return err
 		}
 		return handleSingleTrack(c, m, updater, track, "", chatId, isVideo, force)
@@ -304,10 +306,10 @@ func handleUrl(c *td.Client, m *td.Message, updater *td.Message, trackInfo utils
 	return handleMultipleTracks(c, m, updater, trackInfo.Results, chatId, isVideo, force)
 }
 
-// handleSingleTrack handles a single track.
+// handleSingleTrack menangani satu trek.
 func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song utils.MusicTrack, filePath string, chatId int64, isVideo bool, force bool) error {
 	if song.Duration > int(config.SongDurationLimit) {
-		_, err := updater.EditText(c, fmt.Sprintf("Sorry, song exceeds max duration of %d minutes.", config.SongDurationLimit/60), nil)
+		_, err := updater.EditText(c, fmt.Sprintf("Maaf, durasi lagu melebihi batas maksimal %d menit.", config.SongDurationLimit/60), nil)
 		return err
 	}
 
@@ -334,7 +336,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
 		escName := html.EscapeString(saveCache.Name)
 		escUser := html.EscapeString(saveCache.User)
 		queueInfo := fmt.Sprintf(
-			"<u><b>Added to queue: %d</b></u>\n\n<b>Title:</b> <a href='%s'>%s</a>\n\n<b>Duration:</b> %s min\n<b>Requested by:</b> %s",
+			"<u><b>Ditambahkan ke antrean: %d</b></u>\n\n<b>Judul:</b> <a href='%s'>%s</a>\n\n<b>Durasi:</b> %s menit\n<b>Diminta oleh:</b> %s",
 			qLen, escURL, escName, utils.SecToMin(saveCache.Duration), escUser,
 		)
 
@@ -346,7 +348,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
 		dlResult, err := dl.DownloadCachedTrack(&saveCache, c)
 		if err != nil {
 			cache.ChatCache.RemoveCurrentSong(chatId)
-			_, err = updater.EditText(c, fmt.Sprintf("Download failed: %s", err.Error()), nil)
+			_, err = updater.EditText(c, fmt.Sprintf("Unduhan gagal: %s", err.Error()), nil)
 			return err
 		}
 
@@ -364,32 +366,32 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
 	escUsernp := html.EscapeString(saveCache.User)
 
 	nowPlaying := fmt.Sprintf(
-		"<u><b>| Started streaming</b></u>\n\n<b>Title:</b> <a href='%s'>%s</a>\n\n<b>Duration:</b> %s min\n<b>Requested by:</b> %s",
+		"<u><b>| Mulai streaming</b></u>\n\n<b>Judul:</b> <a href='%s'>%s</a>\n\n<b>Durasi:</b> %s menit\n<b>Diminta oleh:</b> %s",
 		escURLnp, escNamenp, utils.SecToMin(song.Duration), escUsernp,
 	)
 
-	_, err := updater.EditText(c, nowPlaying, &td.EditTextMessageOpts{
+	_, err = updater.EditText(c, nowPlaying, &td.EditTextMessageOpts{
 		ReplyMarkup:           core.ControlButtons("play"),
 		ParseMode:             "HTML",
 		DisableWebPagePreview: true,
 	})
 
 	if err != nil {
-		c.Logger.Warn("Edit message failed", "error", err)
+		c.Logger.Warn("Gagal mengedit pesan", "error", err)
 		return err
 	}
 
 	return nil
 }
 
-// handleMultipleTracks handles multiple tracks.
+// handleMultipleTracks menangani banyak trek sekaligus.
 func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, tracks []utils.MusicTrack, chatId int64, isVideo bool, force bool) error {
 	if len(tracks) == 0 {
-		_, err := updater.EditText(c, "No tracks found.", nil)
+		_, err := updater.EditText(c, "Tidak ada trek ditemukan.", nil)
 		return err
 	}
 
-	queueHeader := "<u><b>Added to Queue:</b></u>\n<blockquote expandable>\n"
+	queueHeader := "<u><b>Ditambahkan ke Antrean:</b></u>\n<blockquote expandable>\n"
 	var tracksToAdd []*utils.CachedTrack
 	var skippedTracks []string
 
@@ -412,10 +414,10 @@ func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, trac
 
 	if len(tracksToAdd) == 0 {
 		if len(skippedTracks) > 0 {
-			_, err := updater.EditText(c, fmt.Sprintf("All tracks were skipped (max duration %d min).", config.SongDurationLimit/60), nil)
+			_, err := updater.EditText(c, fmt.Sprintf("Semua trek dilewati (melebihi batas durasi %d menit).", config.SongDurationLimit/60), nil)
 			return err
 		}
-		_, err := updater.EditText(c, "No valid tracks found.", nil)
+		_, err := updater.EditText(c, "Tidak ada trek valid yang ditemukan.", nil)
 		return err
 	}
 
@@ -451,7 +453,7 @@ func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, trac
 	for i, track := range tracksToAdd {
 		currentQLen := startLen + i + 1
 		escTrackName := html.EscapeString(track.Name)
-		fmt.Fprintf(&sb, "<b>%d.</b> %s\n└ Duration: %s\n",
+		fmt.Fprintf(&sb, "<b>%d.</b> %s\n└ Durasi: %s\n",
 			currentQLen, escTrackName, utils.SecToMin(track.Duration))
 		totalDuration += track.Duration
 	}
@@ -459,13 +461,13 @@ func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, trac
 	sb.WriteString("</blockquote>")
 	escRequester := html.EscapeString(firstName(c, m))
 	queueSummary := fmt.Sprintf(
-		"\n<b>Queue Total:</b> %d\n<b>Duration:</b> %s min\n<b>Requested by:</b> %s",
+		"\n<b>Total Antrean:</b> %d\n<b>Durasi:</b> %s menit\n<b>Diminta oleh:</b> %s",
 		qLenAfter, utils.SecToMin(totalDuration), escRequester,
 	)
 
 	sb.WriteString(queueSummary)
 	if len(skippedTracks) > 0 {
-		fmt.Fprintf(&sb, "\n\n<b>Skipped %d tracks</b> (exceeded duration limit).", len(skippedTracks))
+		fmt.Fprintf(&sb, "\n\n<b>Melewati %d trek</b> (melebihi batas durasi).", len(skippedTracks))
 	}
 
 	fullMessage := sb.String()
@@ -486,3 +488,5 @@ func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, trac
 
 	return err
 }
+
+```
