@@ -108,7 +108,7 @@ func (c *TelegramCalls) handleAutoplay(bot *td.Client, chatID int64, lastSong *u
 // and sending a notification to the chat.
 func (c *TelegramCalls) handleNoSong(bot *td.Client, chatID int64) error {
 	_ = c.Stop(chatID, false)
-	_, _ = bot.SendTextMessage(chatID, "🎵 Queue finished. Add more songs with /play.", nil)
+	_, _ = bot.SendTextMessage(chatID, "🎵 Antrian selesai mek. Tambahlan lagi dengan /play.", nil)
 	return nil
 }
 
